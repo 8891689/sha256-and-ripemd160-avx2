@@ -1,4 +1,4 @@
-# Introduction: A High-Performance Parallel SHA-256 Implementation with AVX2
+# Introduction: A High-Performance Parallel SHA-256 Implementation with AVX2 c/c++
 
 This is a SHA-256 implementation optimized for modern x86-64 CPUs。
 
