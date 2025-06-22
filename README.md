@@ -43,6 +43,8 @@ this implementation can achieve an exceptional performance of over 15 million SH
 
 with a data throughput approaching 1 GB/s.
 
+Based on Intel® Xeon® E5-2697 v4 2.30 GHz single-threaded environment
+
 ```
 ./sha256_test
 --- Correctness Test ---
