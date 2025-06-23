@@ -1,10 +1,10 @@
-# Introduction: A High-Performance Parallel SHA-256 Implementation with AVX2 c/c++
+# Introduction: High-performance parallel SHA-256 and ripemd160 implementation based on AVX2 c/c++
 
-This is a SHA-256 implementation optimized for modern x86-64 CPUs。
+This is a SHA-256 and ripemd160 implementation optimized for modern x86-64 CPUs.
 
-with the primary goal of maximizing computational throughput. 
+Its main goal is to maximize computational throughput.
 
-It leverages the AVX2 (Advanced Vector Extensions 2) instruction set to achieve the parallel processing of 8 independent data blocks simultaneously.
+It utilizes the AVX2 (Advanced Vector Extensions 2) instruction set to achieve parallel processing of 8 independent data blocks at the same time.
 
 # Core Technical Features:
 
@@ -64,6 +64,65 @@ Total hashes processed: 24000000
 Total time: 1.5665 seconds
 Performance: 15.32 Million Hashes/sec
 Throughput:  0.91 GB/s
+
+
+
+ ./ripemd160_test
+--- Test RIPEMD-160 (8 channels in parallel, C/C++ core) ---
+Test Case: Empty Input
+  Lane 0 Hash: 9c1185a5c5e9fc54612808977ee8f548b2258d31 OK
+  Lane 1 Hash: 9c1185a5c5e9fc54612808977ee8f548b2258d31 OK
+  Lane 2 Hash: 9c1185a5c5e9fc54612808977ee8f548b2258d31 OK
+  Lane 3 Hash: 9c1185a5c5e9fc54612808977ee8f548b2258d31 OK
+  Lane 4 Hash: 9c1185a5c5e9fc54612808977ee8f548b2258d31 OK
+  Lane 5 Hash: 9c1185a5c5e9fc54612808977ee8f548b2258d31 OK
+  Lane 6 Hash: 9c1185a5c5e9fc54612808977ee8f548b2258d31 OK
+  Lane 7 Hash: 9c1185a5c5e9fc54612808977ee8f548b2258d31 OK
+------------------------------------------
+
+Test Case: Input "abc"
+  Lane 0 Hash: 8eb208f7e05d987a9b044a8e98c6b087f15a0bfc OK
+  Lane 1 Hash: 8eb208f7e05d987a9b044a8e98c6b087f15a0bfc OK
+  Lane 2 Hash: 8eb208f7e05d987a9b044a8e98c6b087f15a0bfc OK
+  Lane 3 Hash: 8eb208f7e05d987a9b044a8e98c6b087f15a0bfc OK
+  Lane 4 Hash: 8eb208f7e05d987a9b044a8e98c6b087f15a0bfc OK
+  Lane 5 Hash: 8eb208f7e05d987a9b044a8e98c6b087f15a0bfc OK
+  Lane 6 Hash: 8eb208f7e05d987a9b044a8e98c6b087f15a0bfc OK
+  Lane 7 Hash: 8eb208f7e05d987a9b044a8e98c6b087f15a0bfc OK
+------------------------------------------
+
+Test Case: Single Block of 64 Zeros
+  Lane 0 Hash: 9b8ccc2f374ae313a914763cc9cdfb47bfe1c229 OK
+  Lane 1 Hash: 9b8ccc2f374ae313a914763cc9cdfb47bfe1c229 OK
+  Lane 2 Hash: 9b8ccc2f374ae313a914763cc9cdfb47bfe1c229 OK
+  Lane 3 Hash: 9b8ccc2f374ae313a914763cc9cdfb47bfe1c229 OK
+  Lane 4 Hash: 9b8ccc2f374ae313a914763cc9cdfb47bfe1c229 OK
+  Lane 5 Hash: 9b8ccc2f374ae313a914763cc9cdfb47bfe1c229 OK
+  Lane 6 Hash: 9b8ccc2f374ae313a914763cc9cdfb47bfe1c229 OK
+  Lane 7 Hash: 9b8ccc2f374ae313a914763cc9cdfb47bfe1c229 OK
+------------------------------------------
+
+Test Case: Input 56 'a's (tests 2 padding blocks)
+  Lane 0 Hash: e72334b46c83cc70bef979e15453706c95b888be OK
+  Lane 1 Hash: e72334b46c83cc70bef979e15453706c95b888be OK
+  Lane 2 Hash: e72334b46c83cc70bef979e15453706c95b888be OK
+  Lane 3 Hash: e72334b46c83cc70bef979e15453706c95b888be OK
+  Lane 4 Hash: e72334b46c83cc70bef979e15453706c95b888be OK
+  Lane 5 Hash: e72334b46c83cc70bef979e15453706c95b888be OK
+  Lane 6 Hash: e72334b46c83cc70bef979e15453706c95b888be OK
+  Lane 7 Hash: e72334b46c83cc70bef979e15453706c95b888be OK
+------------------------------------------
+
+--- Parallel Performance Test ---
+Data per lane: 128.00 MiB
+Total data for test: 1.00 GiB
+Processing 2097152 blocks per lane.
+Time taken: 0.907 seconds.
+Total data processed: 1024.00 MiB.
+Aggregate throughput: 1129.53 MiB/s (1.10 GiB/s).
+Sample Perf Test Digest (Lane 0): c8a729420cdf71959d50d24a3ce9eff2cf540290
+
+
 ```
 
 
