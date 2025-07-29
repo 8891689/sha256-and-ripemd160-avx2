@@ -1,42 +1,92 @@
-// sha256_avx.h 
+/* sha256_avx.h */
+/* Apache License, Version 2.0
+   Copyright [2025] [8891689]
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+   Author: 8891689 (https://github.com/8891689)
+*/
+
 #ifndef SHA256_AVX_H
 #define SHA256_AVX_H
 
 #include <stdint.h>
-#include <immintrin.h>
+#include <stddef.h> 
 
-// --- SHA256_CTX_AVX8 和輔助宏 ---
-typedef struct {
-    __m256i state[8] __attribute__((aligned(64)));
-} SHA256_CTX_AVX8;
+// Compile-time check to ensure AVX2 is enabled
+#if !defined(__AVX2__)
+#error "This implementation requires AVX2 support. Please compile with -mavx2."
+#endif
 
-// ROR_EPI32 實現
-static inline __m256i vector_ror_epi32(__m256i x, int n) {
-    return _mm256_or_si256(_mm256_srli_epi32(x, n), _mm256_slli_epi32(x, 32 - n));
-}
+// --- C++ compatibility ---
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-// SHA256 的邏輯函數
-#define CH_VEC(x, y, z) _mm256_xor_si256(_mm256_and_si256(x, y), _mm256_andnot_si256(x, z))
-#define MAJ_VEC(x, y, z) _mm256_xor_si256(_mm256_xor_si256(_mm256_and_si256(x, y), _mm256_and_si256(x, z)), _mm256_and_si256(y, z))
+// --- Opaque pointer definition ---
+struct Sha256Avx8_C_Handle; 
+typedef struct Sha256Avx8_C_Handle Sha256Avx8_C_Handle;
 
-// SHA256 的 Sigma 函數
-#define STATE_SIGMA0_VEC_STD(x) _mm256_xor_si256(_mm256_xor_si256(vector_ror_epi32(x, 2), vector_ror_epi32(x, 13)), vector_ror_epi32(x, 22))
-#define STATE_SIGMA1_VEC_STD(x) _mm256_xor_si256(_mm256_xor_si256(vector_ror_epi32(x, 6), vector_ror_epi32(x, 11)), vector_ror_epi32(x, 25))
-#define MSG_SIGMA0_VEC_STD(x)   _mm256_xor_si256(_mm256_xor_si256(vector_ror_epi32(x, 7), vector_ror_epi32(x, 18)), _mm256_srli_epi32(x, 3))
-#define MSG_SIGMA1_VEC_STD(x)   _mm256_xor_si256(_mm256_xor_si256(vector_ror_epi32(x, 17), vector_ror_epi32(x, 19)), _mm256_srli_epi32(x, 10))
+// --- Public interface function ---
 
-// SHA-256 標準初始哈希值 H
-#define SHA256_STD_H0 0x6a09e667
-#define SHA256_STD_H1 0xbb67ae85
-#define SHA256_STD_H2 0x3c6ef372
-#define SHA256_STD_H3 0xa54ff53a
-#define SHA256_STD_H4 0x510e527f
-#define SHA256_STD_H5 0x9b05688c
-#define SHA256_STD_H6 0x1f83d9ab
-#define SHA256_STD_H7 0x5be0cd19
+/**
+* @brief Creates and initializes a new SHA256 AVX8 processor handle.
+* @return Returns a valid handle on success, or NULL if memory allocation fails.
+*/
+Sha256Avx8_C_Handle* sha256_avx8_create();
 
-// 函數原型
-void init_ctx_avx8_for_benchmark(SHA256_CTX_AVX8 *ctx);
-void sha256_transform_avx8(SHA256_CTX_AVX8 *ctx, const uint8_t input_data_8blocks[8][64]);
+/**
+* @brief Destroys a handle and safely frees associated memory (this will clear the memory).
+* @param handle The handle created by sha256_avx8_create(). If NULL, no action is performed.
+*/
+void sha256_avx8_destroy(Sha256Avx8_C_Handle* handle);
+
+/**
+* @brief Reinitializes the hash state, allowing the handle to be reused for new computations.
+* @param handle A valid handle. If NULL, no action is performed.
+*/
+void sha256_avx8_init(Sha256Avx8_C_Handle* handle);
+
+/**
+* @brief Process eight 64-byte data blocks in parallel.
+* @param handle A valid handle.
+* @param input_blocks An array of eight 64-byte data blocks. They must be 64-byte aligned.
+* If handle or input_blocks is NULL, no action is performed.
+*/
+void sha256_avx8_update_8_blocks(Sha256Avx8_C_Handle* handle, const uint8_t input_blocks[8][64]);
+
+/**
+* @brief Extracts the 8 final hash digests from the internal state.
+* @param handle A valid handle.
+* @param hashes_out An output array to store the 8 32-byte hash results.
+* If handle or hashes_out is NULL, no action is performed.
+*/
+void sha256_avx8_get_final_hashes(Sha256Avx8_C_Handle* handle, uint8_t hashes_out[8][32]);
+
+
+// --- Test helper functions ---
+
+/**
+* @brief Prepares a single data block that conforms to the SHA-256 padding rules.
+* This function is primarily used to test single-block messages.
+* @param block Output buffer, 64 bytes in size.
+* @param message Input message string.
+* @param message_len_bytes Message length (bytes). The length must be less than 56.
+*/
+void prepare_test_data_block(uint8_t block[64], const char* message, size_t message_len_bytes);
+
+
+#ifdef __cplusplus
+} // extern "C"
+#endif
 
 #endif // SHA256_AVX_H
