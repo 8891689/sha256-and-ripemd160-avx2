@@ -1,11 +1,26 @@
-//author： https://github.com/8891689
+/* Apache License, Version 2.0
+   Copyright [2025] [8891689]
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+   Author: 8891689 (https://github.com/8891689)
+*/
 #include "ripemd160_avx.h" 
 #include <string.h>
 #include <stdbool.h>
 #include <stddef.h> 
 #include <immintrin.h> 
 
-// --- 靜態常量和輔助函數定義
+// --- Static constant and helper function definitions
 static const uint32_t KL[5] = {0x00000000, 0x5A827999, 0x6ED9EBA1, 0x8F1BBCDC, 0xA953FD4E};
 static const uint32_t KR[5] = {0x50A28BE6, 0x5C4DD124, 0x6D703EF3, 0x7A6D76E9, 0x00000000};
 
@@ -38,7 +53,7 @@ static const uint8_t sp_val_arr[80] = {
     8,5,12,9,12,5,14,6,8,13,6,5,15,13,11,11
 };
 
-// initialize_avx_constants 中初始化
+// Initialize in initialize_avx_constants
 static __m256i INIT_A;
 static __m256i INIT_B;
 static __m256i INIT_C;
@@ -66,7 +81,7 @@ static bool avx_constants_initialized = false;
 static void initialize_avx_constants() {
     if (avx_constants_initialized) return;
 
-    // 初始化 INIT_A 到 INIT_E
+    // Initialize INIT_A to INIT_E
     INIT_A = _mm256_set1_epi32(0x67452301);
     INIT_B = _mm256_set1_epi32(0xEFCDAB89);
     INIT_C = _mm256_set1_epi32(0x98BADCFE);
@@ -85,7 +100,7 @@ static void initialize_avx_constants() {
 }
 
 
-//  schedule 函數
+//  schedule function
 static void schedule(__m256i X[16], const uint8_t blocks[LANE_COUNT][BLOCK_SIZE]) {
     const int* base_addr = (const int*)blocks; 
     const int block_size_dwords = BLOCK_SIZE / sizeof(int); // 64 / 4 = 16
@@ -180,7 +195,7 @@ static void append_length_to_padding(uint8_t* block, uint64_t message_len_bits) 
     }
 }
 
-// --- 公開接口函數 ---
+// --- Public interface function ---
 void ripemd160_multi_init(RIPEMD160_MULTI_CTX* ctx) {
     initialize_avx_constants(); 
     ctx->state[0] = INIT_A;
@@ -250,3 +265,4 @@ void ripemd160_multi_final(RIPEMD160_MULTI_CTX* ctx, uint8_t digests[LANE_COUNT]
         }
     }
 }
+
