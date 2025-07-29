@@ -47,23 +47,65 @@ Based on Intel® Xeon® E5-2697 v4 2.30 GHz single-threaded environment
 
 ```
 ./sha256_test
---- Correctness Test ---
---- Final Hashes (Optimized Version) ---
-Block 0: ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad
-Block 1: ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad
-Block 2: ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad
-Block 3: ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad
-Block 4: ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad
-Block 5: ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad
-Block 6: ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad
-Block 7: ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad
-Expected for 'abc': ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad
+--- Correctness Test (Using C Wrapper with Diverse Inputs) ---
+--- Verification Results ---
+Test Case 0:
+  Input:    ""
+  Expected: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  Result:   e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  Status:   PASS
 
---- Performance Benchmark ---
-Total hashes processed: 24000000
-Total time: 1.5665 seconds
-Performance: 15.32 Million Hashes/sec
+Test Case 1:
+  Input:    "abc"
+  Expected: ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad
+  Result:   ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad
+  Status:   PASS
+
+Test Case 2:
+  Input:    "a"
+  Expected: ca978112ca1bbdcafac231b39a23dc4da786eff8147c4e72b9807785afee48bb
+  Result:   ca978112ca1bbdcafac231b39a23dc4da786eff8147c4e72b9807785afee48bb
+  Status:   PASS
+
+Test Case 3:
+  Input:    "hello world"
+  Expected: b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9
+  Result:   b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9
+  Status:   PASS
+
+Test Case 4:
+  Input:    "1234567890"
+  Expected: c775e7b757ede630cd0aa1113bd102661ab38829ca52a6422ab782862f268646
+  Result:   c775e7b757ede630cd0aa1113bd102661ab38829ca52a6422ab782862f268646
+  Status:   PASS
+
+Test Case 5:
+  Input:    "SHA256 AVX2 Test"
+  Expected: 19f76accdedb73f6333c275e79cf840de7ec75f5e4ae18399f81830dd859ec36
+  Result:   19f76accdedb73f6333c275e79cf840de7ec75f5e4ae18399f81830dd859ec36
+  Status:   PASS
+
+Test Case 6:
+  Input:    "一生二，二生三，三生万物"
+  Expected: 2c7b572cc2a7a3c0af7d2946f79973f15f3f56fd6fc6d85f2d2b5c8d272aa3ed
+  Result:   2c7b572cc2a7a3c0af7d2946f79973f15f3f56fd6fc6d85f2d2b5c8d272aa3ed
+  Status:   PASS
+
+Test Case 7:
+  Input:    "https://github.com/8891689"
+  Expected: 73f9f4d7581f581a8be499fd002160182f4953ab0a736494540161395fb94e81
+  Result:   73f9f4d7581f581a8be499fd002160182f4953ab0a736494540161395fb94e81
+  Status:   PASS
+
+--- Summary ---
+All 8 tests passed successfully!
+
+--- Performance Benchmark (Using C Wrapper) ---
+Total hashes processed: 40000000
+Total time: 2.6321 seconds
+Performance: 15.20 Million Hashes/sec
 Throughput:  0.91 GB/s
+
 
 
 
@@ -121,6 +163,66 @@ Time taken: 0.907 seconds.
 Total data processed: 1024.00 MiB.
 Aggregate throughput: 1129.53 MiB/s (1.10 GiB/s).
 Sample Perf Test Digest (Lane 0): c8a729420cdf71959d50d24a3ce9eff2cf540290
+
+
+./main_full_test
+Starting 100000 HASH160 calculations using PURE AVX2 pipeline...
+  - Both key types handled by multi-block AVX2-SHA256 -> AVX2-RIPEMD160.
+Processing in batches of 8. Results for the last 5 public keys will be printed.
+
+
+--- Results from the final batch (Verification) ---
+--- Public Key Index: 99996 ---
+  Private Key:             000000000000000000000000000000000000000000000000000000000001869c
+  HASH160 (Comp, Pure AVX):6d7eec82c07359cdb24d70c6fe1ac3454c2bd60c
+  HASH160 (Comp, OpenSSL): 6d7eec82c07359cdb24d70c6fe1ac3454c2bd60c
+  (Comp Verified OK)
+  HASH160 (Uncomp, Pure AVX):8799dd474bc40898c3edc50f53b79fa0faca03b9
+  HASH160 (Uncomp, OpenSSL):8799dd474bc40898c3edc50f53b79fa0faca03b9
+  (Uncomp Verified OK)
+
+--- Public Key Index: 99997 ---
+  Private Key:             000000000000000000000000000000000000000000000000000000000001869d
+  HASH160 (Comp, Pure AVX):4bc50155d2a8876b30115bb1ea1c5bfe760fa2de
+  HASH160 (Comp, OpenSSL): 4bc50155d2a8876b30115bb1ea1c5bfe760fa2de
+  (Comp Verified OK)
+  HASH160 (Uncomp, Pure AVX):9da5bc952dc01bfc597faf43957877890908905f
+  HASH160 (Uncomp, OpenSSL):9da5bc952dc01bfc597faf43957877890908905f
+  (Uncomp Verified OK)
+
+--- Public Key Index: 99998 ---
+  Private Key:             000000000000000000000000000000000000000000000000000000000001869e
+  HASH160 (Comp, Pure AVX):d67e742929b38ae8268732fba15cf4b9b6899f9e
+  HASH160 (Comp, OpenSSL): d67e742929b38ae8268732fba15cf4b9b6899f9e
+  (Comp Verified OK)
+  HASH160 (Uncomp, Pure AVX):4ba78b9af152b6f559d149294e7d8be9746d4ed4
+  HASH160 (Uncomp, OpenSSL):4ba78b9af152b6f559d149294e7d8be9746d4ed4
+  (Uncomp Verified OK)
+
+--- Public Key Index: 99999 ---
+  Private Key:             000000000000000000000000000000000000000000000000000000000001869f
+  HASH160 (Comp, Pure AVX):b58ef9b3d0292ee25c3aeb563826a9912f454c0e
+  HASH160 (Comp, OpenSSL): b58ef9b3d0292ee25c3aeb563826a9912f454c0e
+  (Comp Verified OK)
+  HASH160 (Uncomp, Pure AVX):09a6c8f0208d6ec7905a0fbac4f17445fd55272e
+  HASH160 (Uncomp, OpenSSL):09a6c8f0208d6ec7905a0fbac4f17445fd55272e
+  (Uncomp Verified OK)
+
+--- Public Key Index: 100000 ---
+  Private Key:             00000000000000000000000000000000000000000000000000000000000186a0
+  HASH160 (Comp, Pure AVX):96a9d76a7f3f961e3082c13be70d09190e4fc34b
+  HASH160 (Comp, OpenSSL): 96a9d76a7f3f961e3082c13be70d09190e4fc34b
+  (Comp Verified OK)
+  HASH160 (Uncomp, Pure AVX):96bcc760ca75180fd7fc83ede307897f4bb86568
+  HASH160 (Uncomp, OpenSSL):96bcc760ca75180fd7fc83ede307897f4bb86568
+  (Uncomp Verified OK)
+
+--- Performance Summary (Pure AVX2 Pipeline) ---
+Total public keys processed: 100000
+Total HASH160s computed:     200000 (2 per pubkey)
+Total time:                  3.0738 seconds
+Performance:                 65066.11 HASH160s/sec
+Performance:                 0.07 Million HASH160s/sec
 
 
 ```
